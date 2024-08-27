@@ -5,6 +5,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const authRoutes = require('./routes/auth');
+const { authenticateToken } = require('./middlewares');
 
 require('dotenv').config();
 
@@ -12,8 +13,12 @@ const middlewares = require('./middlewares');
 const api = require('./api');
 const items = require('./routes/items');
 const blinds = require('./routes/blinds');
-const { sequelize } = require('./utils');
+const sequelize = require('./database');
 const app = express();
+
+sequelize.sync({ force: false }).then(() => {
+  console.log("Database & tables created!");
+});
 
 sequelize.authenticate()
   .then(() => {
@@ -23,13 +28,15 @@ sequelize.authenticate()
     console.error('Unable to connect to the database:', err);
   });
 
+
+
 app.use(morgan('dev'));
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
 app.use(bodyParser.json());
-app.use('/api/auth', authRoutes);
+app.use(authRoutes);
 
 app.use('/items', items);
 app.use('/blinds', blinds);

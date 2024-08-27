@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { DataTypes, Op } = require('sequelize');
 const { faker } = require('@faker-js/faker');
-const { sequelize } = require('../utils');
+const sequelize = require('../database');
 
 const Blind = sequelize.define('Blind', {
   id: {
